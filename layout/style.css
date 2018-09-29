@@ -1,0 +1,27 @@
+.container {
+    border: 1px solid blue;
+    overflow: hidden;
+}
+.aside {
+    float: left;
+    width: 400px;
+    background-color: green;
+    color: white;
+    border: 10px solid orange;
+    
+}
+p {
+    overflow: hidden;
+    text-overflow: ellipsis;    
+    word-break: break-all;
+}
+.main {
+    margin-left: 400px;
+    background-color: red;
+    color: white;
+    text-align: center;
+    margin-bottom: -9999px;
+    padding-bottom: 9999px;
+    border: 10px solid orange;
+
+}
