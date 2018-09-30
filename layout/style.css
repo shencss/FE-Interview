@@ -1,27 +1,57 @@
-.container {
-    border: 1px solid blue;
+div {
+    color: white;
+    font-weight: bold;
+}
+
+/* Padding补值 */
+.container1 {
+    border: 5px solid blue;
     overflow: hidden;
 }
-.aside {
+.aside1 {
     float: left;
     width: 400px;
-    background-color: green;
-    color: white;
-    border: 10px solid orange;
-    
+    background-color: #23B14D;
+    padding-bottom: 999px;
+    margin-bottom: -999px;
 }
-p {
-    overflow: hidden;
-    text-overflow: ellipsis;    
-    word-break: break-all;
-}
-.main {
+.main1 {
     margin-left: 400px;
-    background-color: red;
-    color: white;
-    text-align: center;
-    margin-bottom: -9999px;
-    padding-bottom: 9999px;
-    border: 10px solid orange;
+    background-color: #FFC90D;
+    height: 400px;
+}
 
+/* Flex布局 */
+.container2 {
+    border: 5px solid blue;
+    display: flex;
+    align-items: stretch;
+}
+.aside2 {
+    width: 400px;
+    background-color: #23B14D;
+}
+.main2 {
+    background-color: #FFC90D;
+    height: 400px;
+    flex-grow: 1;
+}
+
+/* table-cell布局 */
+.container3 {
+    display: table;
+    border: 5px solid blue;
+    width: 100%;
+    box-sizing: border-box;
+}
+.aside3 {
+    display: table-cell;
+    width: 400px;
+    background-color: #23B14D;
+}
+.main3 {
+    display: table-cell;
+    background-color: #FFC90D;
+    height: 400px;
+    
 }

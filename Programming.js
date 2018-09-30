@@ -4,16 +4,16 @@ setTimeout输出
 for(var i = 0; i < 10; i++) {
     (function(i) {
         setTimeout(function() {
-            console.log(i);
+            //console.log(i);
         });
     })(i);
 }
 
 /*
 go函数:
-go('T') ==> 输出 goT
-go()('T') ==> 输出 gooT
-go()()('T') ==> 输出 goooT
+go('T') ==> 'goT'
+go()('T') ==> 'gooT'
+go()()('T') ==> 'goooT'
 */
 var go = (function() {
     var count = 1;
@@ -30,9 +30,11 @@ var go = (function() {
         }
     }
 })();
+/*
 go('T');
 go()('T');
 go()()('T');
+*/
 
 /*
 throttle函数：在间隔超过delay时间后，action才可再次执行
@@ -40,13 +42,14 @@ throttle函数：在间隔超过delay时间后，action才可再次执行
 var throttle = function(delay, action) {
     var last = 0;
     return function () {
-        var now = +new Date();
+        var now = new Date();
         if(now - last > delay) {
             action.apply(this, arguments);
             last = now;
         }
     }
 }
+/*
 function fn() {
     console.log('fn');
 }
@@ -54,6 +57,7 @@ var throttleFn = throttle(100, fn);
 throttleFn();
 throttleFn();
 throttleFn();
+*/
 
 /*
 debounce函数: action在调用的idle秒后执行，期间action再次执行会刷新等待时间
@@ -68,6 +72,7 @@ var debounce = function(idle, action) {
         }, idle);
     }
 }
+/*
 function fn3() {
     console.log('fn3');
 }
@@ -75,7 +80,7 @@ var debounceFn3 = debounce(100, fn3);
 debounceFn3();
 debounceFn3();
 debounceFn3();
-
+*/
 
 /*
 Bind函数实现
@@ -84,19 +89,25 @@ Function.prototype.myBind = function() {
     var self = this;
     var context = [].shift.call(arguments);
     var args = [].slice.call(arguments);
-
+    
     return function() {
-        self.apply(context, [].concat.call(args, [].slice.call(arguments)));
+        return self.apply(context, args.concat([].slice.call(arguments)));
     }
 }
+
 var myObject = {
     n: 'myObject'
 }
 function fn1(m) {
     console.log(m + ' ' + this.n);
 }
-var fn2 = fn1.bind(myObject, 'bind');
+var fn2 = fn1.myBind(myObject, 'bind');
 fn2();
+function add(a, b, c) {
+    return a + b + c;
+}
+var add2 = add.myBind(undefined, 100);
+console.log(add2(2, 3))
 
 /*
 Promise + AJAX
@@ -269,7 +280,6 @@ MyPromise.prototype.resolve = function(value) {
         });
     }
 }
-
 MyPromise.prototype.reject = function(reason) {
     var self = this;
     if(this.status === 'pending') {
@@ -281,7 +291,6 @@ MyPromise.prototype.reject = function(reason) {
         });
     }
 }
-
 MyPromise.prototype.then = function(resolvedCallback, rejectedCallback) {
     var self = this;
     resolvedCallback = typeof resolvedCallback === 'function' ? resolvedCallback : function(value) {
@@ -318,11 +327,10 @@ MyPromise.prototype.then = function(resolvedCallback, rejectedCallback) {
     
     });
 }
-
 MyPromise.prototype.catch = function(rejectedCallback) {
     return this.then(null, rejectedCallback);
 }
-
+/*
 var p = new MyPromise(function(resolve, reject) {
     setTimeout(resolve,3000,'hello!');
 });
@@ -337,7 +345,7 @@ p.then(function(data) {
 }).catch(function(data) { 
     console.log(data);
  });
-
+*/
 
  /*
  checkfy函数：如果原型对象中的check函数返回true则执行post函数
@@ -367,10 +375,12 @@ var checkfy = function(prototype) {
         }
     }
 }
+/*
 var page = new Page();
 page.postA();
 checkfy(Page.prototype);
 page.postB();
+*/
 
 /*
 flat函数：返回扁平化后的数组
@@ -386,10 +396,7 @@ var flat = function(array) {
     }
     return result;
 }
-var array = [1, [2, [[3, 4], 5], 6]];
-var flatArray = flat(array);
-
-console.log(flatArray);
+//console.log(flat([1, [2, [[3, 4], 5], 6]]));
 
 /*
 deepClone函数： 实现对象的深拷贝
@@ -414,10 +421,12 @@ var obj = {
     number: 0,
     object: {number: 99}
 }
+/*
 var objClone = deepClone(obj);
 objClone.object.number = 100;
 console.log(obj.object.number);
 console.log(objClone.object.number);
+*/
 
 /*
 containsRepeatingLtter函数：用正则表达式检测字符串是否包含重复的字符
@@ -425,8 +434,7 @@ containsRepeatingLtter函数：用正则表达式检测字符串是否包含重�
 var containsRepeatingLtter = function(str) {
     return /([a-zA-Z])\1/.test(str);
 }
-var str = 'abccd';
-console.log(containsRepeatingLtter(str));
+//console.log(containsRepeatingLtter('adccd'));
 
 /*
 curry函数：函数的柯里化，将使用多个参数的函数转换成一系列使用一个参数的函数
@@ -446,7 +454,7 @@ var curry = function(fn) {
 function fn4(a, b, c) {
     return a + b + c;
 }
-console.log(curry(fn4)(1)(2)(3));
+//console.log(curry(fn4)(1)(2)(3));
 
 /*
 设计模式
@@ -463,9 +471,11 @@ var Singleton;
         this.property = "property";
     }
 })();
+/*
 var instance1 = new Singleton();
 var instance2 = new Singleton();
 console.log(instance1 === instance2);
+*/
 
 // 2)工厂模式：定义一个接口，该接口由子类决定实例化哪个类
 function Dog() {
@@ -483,10 +493,12 @@ Factory.prototype.getInstance = function(className) {
             return new Cat();
     }
 }
+/*
 var factory = new Factory();
 var dog = factory.getInstance('Dog');
 var cat = factory.getInstance('Cat');
 console.log(dog.name + ' ' + cat.name);
+*/
 
 // 3)代理模式：一个对象充当另一个对象的接口
 function Person() {};
@@ -502,9 +514,11 @@ function PersonProxy() {
 PersonProxy.prototype.callMethod = function(fnName) {
     this.Person[fnName]();
 }
+/*
 var personProxy = new PersonProxy();
 personProxy.callMethod('sayName');
 personProxy.callMethod('sayAge');
+*/
 
 // 4)发布订阅模式：于一个主题/事件通道，希望接收通知的对象通过自定义事件订阅主题，被激活事件的对象通过发布主题事件的方式被通知
 function Public() {
@@ -540,12 +554,13 @@ Public.prototype = {
         }
     }
 }
+/*
 var Publisher = new Public();
 Publisher.on('test', function(data) {
     console.log(data);
 });
 Publisher.emit('test', 'test the publisher');
-
+*/
 
 /*
 动态原型模式与寄生组合继承
@@ -574,11 +589,13 @@ function SubType(name, age) {
     prototype.constructor = SubType;
     SubType.prototype = prototype;
 })();
+/*
 var superType = new SuperType('SuperType');
 var subType = new SubType('SubType', 20);
 superType.sayName();
 subType.sayName();
 subType.sayAge();
+*/
 
 /*
 new关键字实现
@@ -588,10 +605,11 @@ var myNew = function(fn) {
     var returnObj = fn.call(obj, Array.prototype.slice.call(arguments, 1));
     return returnObj === 'object' ? returnObj : obj;
 }
+/*
 var subType2 = myNew(SubType, 'SubType2');
 console.log(subType2 instanceof SubType);
 subType2.sayName();
-
+*/
 
 /*
 Obeject.create实现
@@ -614,7 +632,7 @@ var parseNum = function(num) {
     }
     return temp.reverse().join(',');
 }
-console.log(parseNum(12345678));
+//console.log(parseNum(12345678));
 
 
 /*
@@ -674,6 +692,82 @@ var quickSort = function(array) {
     }
     return quickSort(left).concat([center], quickSort(right));
 }
-console.log(quickSort([9,4,6,2,1,5,3,7,8]));
+//console.log(quickSort([9,4,6,2,1,5,3,7,8]));
 
+
+/*
+AOP：面向切面编程，实现before和after函数
+*/
+Function.prototype.before = function(beforeFn) {
+    var self = this;
+    return function() {
+        beforeFn.apply(this, arguments);
+        self.apply(this, arguments);
+    }
+}
+Function.prototype.after = function(afterFn) {
+    var self = this;
+    return function() {
+        self.apply(this, arguments);
+        afterFn.apply(this, arguments);
+    }
+}
+/*
+var fn5 = function(string) {
+    console.log(string);
+}
+fn5('AOP');
+fn5 = fn5.before(function() {
+    console.log('===before===');
+}).after(function() {
+    console.log('===after===');
+});
+fn5('AOP');
+*/
+
+/*
+CodingMan函数：
+CodingMan('Peter') ==> 'Hi! This is Peter!'
+CodingMan('Peter').eat('dinner') ==> 'Hi! This is Peter!' 'Eat dinner'
+CodingMan('Peter').sleep(3).eat('dinner') ==>'Hi! This is Peter!' 3秒... 'Eat dinner'
+CodingMan('Peter').sleepFirst(5).eat('supper') ==> 5秒后.. 'Hi! This is Peter!' 'Eat supper'
+*/
+var CodingMan = function(name) {
+    function Man(name) {
+        setTimeout(function() {
+            console.log('Hi! This is ' + name + '!');
+        });
+    }
+
+    Man.prototype.sleep = function(seconds) {
+        var currTime = new Date();
+        var delay = seconds * 1000;
+        setTimeout(function() {
+            while(new Date - currTime < delay) {} //阻塞异步线程
+            console.log('Wake up after ' + seconds);
+        });
+        return this;
+    }
+
+    Man.prototype.eat = function(food) {
+        setTimeout(function() {
+            console.log('Eat '+ food);
+        });
+        return this;
+    }
+
+    Man.prototype.sleepFirst = function(seconds) {
+        var currTime = new Date();
+        var delay = seconds * 1000;
+        while(new Date() - currTime < delay) {} //阻塞同步线程
+        console.log('Wake up after ' + seconds);
+        return this;
+    }
+    
+    return new Man(name);
+}
+//CodingMan('Peter');
+//CodingMan('Peter').sleep(3).eat('dinner');
+//CodingMan('Peter').eat('dinner').eat('supper');
+//CodingMan('Peter').sleepFirst(5).eat('supper');
 
