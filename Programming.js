@@ -94,7 +94,7 @@ Function.prototype.myBind = function() {
         return self.apply(context, args.concat([].slice.call(arguments)));
     }
 }
-
+/*
 var myObject = {
     n: 'myObject'
 }
@@ -108,6 +108,7 @@ function add(a, b, c) {
 }
 var add2 = add.myBind(undefined, 100);
 console.log(add2(2, 3))
+*/
 
 /*
 Promise + AJAX
@@ -770,4 +771,41 @@ var CodingMan = function(name) {
 //CodingMan('Peter').sleep(3).eat('dinner');
 //CodingMan('Peter').eat('dinner').eat('supper');
 //CodingMan('Peter').sleepFirst(5).eat('supper');
+
+/*
+compose函数：函数组合串联
+*/
+var compose = function(fns) {
+    return function(arg) {
+        return fns.reduceRight(function(composed, fn) {
+            return fn(composed);
+        }, arg);
+    }
+}
+/*
+var fn1 = a => a + 1;
+var fn2 = b => b + 2;
+var fn3 = c => c + 3;
+console.log(compose([fn1, fn2, fn3])(100));
+*/
+
+/*
+isFirst函数：该值是否第一次出现
+*/
+var isFirst = (function() {
+    var list = [];
+    return function(value) {
+        if(list.indexOf(value) === -1) {
+            list.push(value);
+            return true;
+        }
+        return false;
+    }
+})();
+/*
+console.log(isFirst(1));
+console.log(isFirst(2));
+console.log(isFirst(1));
+*/
+
 
