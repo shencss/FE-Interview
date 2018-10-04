@@ -1,13 +1,34 @@
 /*
-setTimeout输出
+setTimeout输出：每秒输出一个数字，输出玩0-4一秒后输出5
 */
-for(var i = 0; i < 10; i++) {
-    (function(i) {
+//ES5
+for(var i = 0; i < 5; i++) {
+    (function(j) {
         setTimeout(function() {
-            //console.log(i);
-        });
+           console.log(new Date(), j);
+        }, j * 1000);
     })(i);
 }
+setTimeout(function() {
+    console.log(new Date(), i);
+}, i * 1000);
+//ES6
+const tasks = [];
+const output = i => new Promise((resolve) => {
+    setTimeout(() => {
+        console.log(new Date(), i);
+        resolve();
+    }, i * 1000);
+});
+for(let i = 0; i < 5; i++) {
+    tasks.push(output(i));
+}
+Promise.all(tasks).then(() => {
+    setTimeout(() => {
+        console.log(new Date(), i);
+    }, 1000);
+});
+
 
 /*
 go函数:
