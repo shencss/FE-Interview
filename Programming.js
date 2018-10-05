@@ -5,18 +5,18 @@ setTimeout输出：每秒输出一个数字，输出玩0-4一秒后输出5
 for(var i = 0; i < 5; i++) {
     (function(j) {
         setTimeout(function() {
-           console.log(new Date(), j);
+           //console.log(new Date(), j);
         }, j * 1000);
     })(i);
 }
 setTimeout(function() {
-    console.log(new Date(), i);
+    //console.log(new Date(), i);
 }, i * 1000);
 //ES6
 const tasks = [];
 const output = i => new Promise((resolve) => {
     setTimeout(() => {
-        console.log(new Date(), i);
+        //console.log(new Date(), i);
         resolve();
     }, i * 1000);
 });
@@ -25,7 +25,7 @@ for(let i = 0; i < 5; i++) {
 }
 Promise.all(tasks).then(() => {
     setTimeout(() => {
-        console.log(new Date(), i);
+        //console.log(new Date(), i);
     }, 1000);
 });
 
@@ -60,7 +60,7 @@ go()()('T');
 /*
 throttle函数：在间隔超过delay时间后，action才可再次执行
 */
-var throttle = function(delay, action) {
+var throttle = function(action, delay) {
     var last = 0;
     return function () {
         var now = new Date();
@@ -83,9 +83,21 @@ throttleFn();
 /*
 debounce函数: action在调用的idle秒后执行，期间action再次执行会刷新等待时间
 */
-var debounce = function(idle, action) {
-    var last;
+var debounce = function(action, delay, immediate) {
+    var timer, context, args;
     return function() {
+        if(!timer) {
+            timer = setTimeout(function() {
+                timer = null;
+                if(!immediate) {
+                    action.apply(context, args);
+                    context = args = null;
+                    //https://blog.csdn.net/Beijiyang999/article/details/79832604
+                }
+            },);
+        }
+
+
         var context = this, args = arguments;
         clearTimeout(last);
         last = setTimeout(function() {
@@ -116,20 +128,36 @@ Function.prototype.myBind = function() {
     }
 }
 /*
+Call函数实现
+*/
+Function.prototype.myCall = function() {
+    var context = [].shift.call(arguments);
+    var args = [];
+    for(var i = 0, len = arguments.length; i < len; i++) {
+        args.push('arguments[' + i + ']');
+    }
+    context.fn = this;
+    var result =  eval('context.fn(' + args + ')');//可用拓展运算符替代
+    delete context.fn;
+    return result;
+}
+
 var myObject = {
     n: 'myObject'
 }
-function fn1(m) {
-    console.log(m + ' ' + this.n);
+function fn1(type, i) {
+    console.log(type + ' ' + i + ' ' + this.n);
 }
-var fn2 = fn1.myBind(myObject, 'bind');
+var fn2 = fn1.myBind(myObject, 'bind', 'my');
+fn1.myCall(myObject, 'call', 'my');
 fn2();
 function add(a, b, c) {
     return a + b + c;
 }
 var add2 = add.myBind(undefined, 100);
 console.log(add2(2, 3))
-*/
+console.log(Boolean([]))
+
 
 /*
 Promise + AJAX
@@ -823,10 +851,17 @@ var isFirst = (function() {
         return false;
     }
 })();
+//console.log(isFirst(1));
+//console.log(isFirst(2));
+//console.log(isFirst(1));
+
+
+
 /*
-console.log(isFirst(1));
-console.log(isFirst(2));
-console.log(isFirst(1));
+myTrim函数：实现字符串头尾去空字符
 */
-
-
+var myTrim = function(str) {
+    var reg = /^\s+|\s+$/g;
+    return str.replace(reg, '');
+}
+//console.log(myTrim('  sds ad  '))
