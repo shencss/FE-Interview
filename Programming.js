@@ -58,13 +58,13 @@ go()()('T');
 */
 
 /*
-throttle函数：在间隔超过delay时间后，action才可再次执行
+throttle函数：在两次执行的时间间隔超过wait后，action才可再次执行
 */
-var throttle = function(action, delay) {
+var throttle = function(action, wait) {
     var last = 0;
     return function () {
         var now = new Date();
-        if(now - last > delay) {
+        if(now - last > wait) {
             action.apply(this, arguments);
             last = now;
         }
@@ -81,35 +81,34 @@ throttleFn();
 */
 
 /*
-debounce函数: action在调用的idle秒后执行，期间action再次执行会刷新等待时间
+debounce函数: 如果imediate为true则立即调用action，此后action在调用的wait秒后执行，期间action再次执行会刷新等待时间
 */
-var debounce = function(action, delay, immediate) {
-    var timer, context, args;
+var debounce = function(action, wait, immediate) {
+    var timer;
     return function() {
-        if(!timer) {
+        var context = this;
+        if(timer) clearTimeout(timer);
+
+        if(immediate) {
+            if(!timer) {
+                action.apply(context, arguments);
+            }
+            //在第一次执行后timer便保存了一个计时器ID，wait时间后这个ID便被回收
             timer = setTimeout(function() {
                 timer = null;
-                if(!immediate) {
-                    action.apply(context, args);
-                    context = args = null;
-                    //https://blog.csdn.net/Beijiyang999/article/details/79832604
-                }
-            },);
+            }, wait);
+        } else {
+            timer = setTimeout(function() {
+                action.apply(context, arguments);
+            }, wait);
         }
-
-
-        var context = this, args = arguments;
-        clearTimeout(last);
-        last = setTimeout(function() {
-            action.apply(context, args);
-        }, idle);
     }
 }
 /*
 function fn3() {
     console.log('fn3');
 }
-var debounceFn3 = debounce(100, fn3);
+var debounceFn3 = debounce(fn3, 1000, true);
 debounceFn3();
 debounceFn3();
 debounceFn3();
@@ -141,7 +140,7 @@ Function.prototype.myCall = function() {
     delete context.fn;
     return result;
 }
-
+/*
 var myObject = {
     n: 'myObject'
 }
@@ -157,6 +156,28 @@ function add(a, b, c) {
 var add2 = add.myBind(undefined, 100);
 console.log(add2(2, 3))
 console.log(Boolean([]))
+*/
+
+/*
+instanceof实现
+*/
+var myInstanceof = function(instance, constructor) {
+    while(instance.__proto__ !== null) {
+        if(instance.__proto__ === constructor.prototype) {
+            return true;
+        }
+        instance = instance.__proto__;
+    }
+    return false;
+}
+/*
+function Foo() {};
+function Poo() {};
+var foo = new Foo();
+console.log(myInstanceof(foo, Foo));
+console.log(myInstanceof(foo, Poo));
+console.log(myInstanceof(foo, Object));
+*/
 
 
 /*
@@ -193,6 +214,19 @@ p.then(function(data) {
     console.log(data);
 })
 */
+
+/*
+JSONP封装
+*/
+var jsonp = function(url, callback, success) {
+    var callbackName = callback + '_' + new Date().getTime();
+    var script = document.createElement('script');
+    script.src = ulr + '?callbakc=' + callbackName;
+    window[callbackName] = function(data) {
+        success && sucess(data);
+    };
+    body.appendChild(script);
+}
 
 /*
 EventUtil工具类
@@ -604,6 +638,8 @@ Public.prototype = {
         }
     }
 }
+
+// 5)装饰模式：不需要改变以后的接口，而给对象添加功能 ==> React中 connect(mapStateToProps)(MyComponent)
 /*
 var Publisher = new Public();
 Publisher.on('test', function(data) {
@@ -865,3 +901,6 @@ var myTrim = function(str) {
     return str.replace(reg, '');
 }
 //console.log(myTrim('  sds ad  '))
+
+console.log(['1', '2', '3'].map(parseInt));
+console.log(['1', '2', '3'].map(value => parseInt(value)));
