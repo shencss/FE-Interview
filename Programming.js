@@ -904,3 +904,8 @@ var myTrim = function(str) {
 
 console.log(['1', '2', '3'].map(parseInt));
 console.log(['1', '2', '3'].map(value => parseInt(value)));
+
+
+function Foo() { console.log(x)  }
+
+Foo()
