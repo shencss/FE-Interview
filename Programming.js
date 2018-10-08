@@ -906,6 +906,7 @@ console.log(['1', '2', '3'].map(parseInt));
 console.log(['1', '2', '3'].map(value => parseInt(value)));
 
 
-function Foo() { console.log(x)  }
-
-Foo()
+var obj = {};
+console.log( obj.__proto__, obj.toString())
+var obj2 = Object.create(null);
+console.log( obj2.__proto__, obj2.toString())
