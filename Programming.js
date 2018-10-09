@@ -670,11 +670,12 @@ function SubType(name, age) {
         }
     }
 }
+//ES5
 (function() {
-    var prototype = Object.create(SuperType.prototype);
-    prototype.constructor = SubType;
-    SubType.prototype = prototype;
+    SubType.prototype = Object.create(SuperType.prototype);
+    SubType.prototype.constructor = SubType;
 })();
+//ES6 Object.setPropertyOf(SubType.prototype, SuperType.prototype)
 /*
 var superType = new SuperType('SuperType');
 var subType = new SubType('SubType', 20);
@@ -902,11 +903,35 @@ var myTrim = function(str) {
 }
 //console.log(myTrim('  sds ad  '))
 
-console.log(['1', '2', '3'].map(parseInt));
-console.log(['1', '2', '3'].map(value => parseInt(value)));
+//console.log(['1', '2', '3'].map(parseInt));
+//console.log(['1', '2', '3'].map(value => parseInt(value)));
 
 
+/* 创建全空对象
 var obj = {};
 console.log( obj.__proto__, obj.toString())
 var obj2 = Object.create(null);
 console.log( obj2.__proto__, obj2.toString())
+*/
+
+/* 原型对象丢失
+function Foo() {};
+var foo = new Foo();
+console.log(foo.constructor == Foo)
+console.log(foo instanceof Foo)
+Foo.prototype = {};
+console.log(foo.constructor == Foo)
+console.log(foo  instanceof Foo)
+*/
+function Foo() {}
+Foo.prototype.a = 1;
+var foo1 = new Foo();
+var foo2 = new Foo();
+console.log(foo1.a)
+console.log(foo2.a)
+foo1.__proto__.a = 2;
+console.log(foo1.a)
+console.log(foo2.a)
+console.log(Foo.name)
+
+console.log('a' instanceof String)
