@@ -25,7 +25,7 @@ for(let i = 0; i < 5; i++) {
 }
 Promise.all(tasks).then(() => {
     setTimeout(() => {
-        //console.log(new Date(), i);
+        console.log(new Date(), i);
     }, 1000);
 });
 
