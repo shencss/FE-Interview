@@ -11,6 +11,7 @@ for(var i = 0; i < 5; i++) {
 }
 setTimeout(function() {
     //console.log(i);
+    
 }, i * 1000)
 //ES6
 const prs = [];
@@ -276,7 +277,7 @@ EventEmitter实现
 
 /*
 Promise实现
-*/
+*//*
 const MyPromise = (executor) => {
     this.status = 'pandding';
     try {
@@ -348,7 +349,7 @@ MyPromise.prototype.then = (resolvedCallback, rejectedCallback) => {
 MyPromise.prototype.catch = (rejectedCallback) => {
     return this.then(null, rejectedCallback);
 }
-
+*/
 /*
 var p = new MyPromise(function(resolve, reject) {
     setTimeout(resolve,3000,'hello!');
@@ -393,14 +394,40 @@ page.postB();
 /*
 flat函数：返回扁平化后的数组
 */
-
+const flat = array => {
+    let result = [];
+    for(let i = 0, len = array.length; i < len; i++) {
+        if(typeof array[i] === 'number') {
+            result.push(array[i]);
+        } else {
+            result = result.concat(flat(array[i]));
+        }
+    }
+    return result;
+}
 //console.log(flat([1, [2, [[3, 4], 5], 6]]));
 
 /*
 deepClone函数： 实现对象的深拷贝
 */
-
+const deepClone = obj => {
+    if(typeof obj !== 'object') return obj;
+    let cloneObject = Array.isArray(obj) ? [] : {};
+    if(obj) {
+        for(key in obj) {
+            if(obj.hasOwnProperty(key)) {
+                if(typeof obj[key] !== 'object') {
+                    cloneObject[key] = obj[key];
+                } else {
+                    cloneObject[key] = deepClone(obj[key]);
+                }
+            }
+        }
+    }
+    return cloneObject;
+}
 /*
+var obj = {number: 10, object: {number: 10}}
 var objClone = deepClone(obj);
 objClone.object.number = 100;
 console.log(obj.object.number);
@@ -416,17 +443,37 @@ containsRepeatingLtter函数：用正则表达式检测字符串是否包含重�
 /*
 curry函数：函数的柯里化，将使用多个参数的函数转换成一系列使用一个参数的函数
 */
-
+const curry = function(fn) {
+    const len = fn.length;
+    let args = [].slice.call(arguments, 1);
+    return function() {
+        args = args.concat([].slice.call(arguments));
+        if(args.length >= len) {
+            return fn.apply(this, args);
+        } else {
+            return arguments.callee;
+        }
+    }
+}
+/*
 function fn4(a, b, c) {
     return a + b + c;
 }
-//console.log(curry(fn4)(1)(2)(3));
+console.log(curry(fn4, 1)(2)(3));
+*/
 
 /*
 设计模式
 */
 // 1)单例模式：一个特定的类只有一个实例
-
+const Singleton = (() => {
+    let instance;
+    return function() {  
+        if(instance) return instance;
+        this.name = 'Singleton';
+        instance = this;
+    }
+})();
 /*
 var instance1 = new Singleton();
 var instance2 = new Singleton();
@@ -443,15 +490,68 @@ console.log(dog.name + ' ' + cat.name);
 */
 
 // 3)代理模式：一个对象充当另一个对象的接口
+const Person = function(name, age) {
+    this.name = name;
+    this.age = age;
+    if(!this.sayName) {
+        Person.prototype.sayName = () => {
+            console.log(this.name);
+        }
+    }
+    if(!this.sayAge) {
+        Person.prototype.sayAge = () => {
+            console.log(this.age);
+        }
+    }
+}
+const PersonProxy = function(name, age) {
+    this.person = new Person(name, age);
 
+    if(!this.callMethod) {
+        PersonProxy.prototype.callMethod = method => {
+            this.person[method]();
+        }
+    }
+}
 /*
-var personProxy = new PersonProxy();
+var personProxy = new PersonProxy('Person', 10);
 personProxy.callMethod('sayName');
 personProxy.callMethod('sayAge');
 */
 
 // 4)发布订阅模式：于一个主题/事件通道，希望接收通知的对象通过自定义事件订阅主题，被激活事件的对象通过发布主题事件的方式被通知
+function Public() {
+    this.handlers = {};
+}
+Public.prototype = {
+    constructor: Public,
 
+    on(envetType, handler) {
+        if(!(envetType in this.handlers)) {
+            this.handlers[eventType] = [];
+            
+        } 
+        this.handlers[eventType].push(handler);
+        return this;
+    },
+
+    off(eventType, handler) {
+        let handlers = this.handlers[eventType];
+        if(handlers) {
+            handlers.splice(handlers.indexOf(handler), 1);
+            this.handlers[eventType] = handlers;
+        }
+    },
+
+    emit(eventType) {
+        let handlers = this.handlers[eventType];
+        if(handlers) {
+            for(let i = 0, len = handlers.length; i < len; i++) {
+                handlers[i].apply(this, [].slice.call(arguments));
+            }
+        }
+    }
+}
 
 // 5)装饰模式：不需要改变以后的接口，而给对象添加功能 ==> React中 connect(mapStateToProps)(MyComponent)
 /*
@@ -465,7 +565,29 @@ Publisher.emit('test', 'test the publisher');
 /*
 动态原型模式与寄生组合继承
 */
+function SuperType(name) {
+    this.name = name;
 
+    if(typeof this.sayName !== 'function') {
+        SuperType.prototype.sayName = function() {
+            console.log(this.name);
+        }
+    }
+}
+function SubType(name, age) {
+    SuperType.call(this, name);
+    this.age = age;
+
+    if(typeof this.sayAge !== 'function') {
+        SubType.prototype.sayAge = function() {
+            console.log(this.age);
+        }
+    }
+}
+(function() {
+    SubType.prototype = Object.create(SuperType.prototype);
+    SubType.prototype.constructor = SubType;
+})();
 //ES5
 
 //ES6 Object.setPropertyOf(SubType.prototype, SuperType.prototype)
@@ -480,7 +602,16 @@ subType.sayAge();
 /*
 new关键字实现
 */
-
+const myNew = function(constructor) {
+    const obj = Object.create(constructor.prototype);
+    /*
+        function Fn() {};
+        Fn.prototype = constructor.prototype;
+        const obj = new Fn();
+    */
+    const resultValue = constructor.apply(obj, [].slice.call(arguments, 1));
+    return typeof resultValue === 'object' ? resultValue : obj;
+}
 /*
 var subType2 = myNew(SubType, 'SubType2');
 console.log(subType2 instanceof SubType);
@@ -490,19 +621,56 @@ subType2.sayName();
 /*
 Obeject.create实现
 */
-
+const myCreate = function(prototype) {
+    function Fn() {};
+    Fn.prototype = prototype;
+    return new Fn();
+}
 
 
 /*
 parseNum函数：将数字转化为千分位
 */
-
-//console.log(parseNum(12345678));
+const parseNum = number => {
+    let array= String(number).split('').reverse();
+    const temp = [];
+    for(let i = 0, len = array.length; i < len; i += 3) {
+        temp.push(array.slice(i, i + 3).reverse().join(''));
+    }
+    return temp.reverse().join(',');
+}
+console.log(parseNum(12345678));
 
 
 /*
 delegateEvent函数：事件代理的实现
 */
+const delegateEvent = (parentElement, selector, type, callback) => {
+    const matchSelector = (element, selector) => {
+        if(selector.chartAt(0) === '#') {
+            return element.id === selector.slice(1);
+        } else if(selector.chartAt(0) === '.') {
+            return (' ' + element.className + ' ').indexOf(selector.slice(1)) !== -1;
+        }
+        return element.tagName.toLowerCase() === selector.toLowerCase();
+    }
+    const handler = event => {
+        event = event ? event : window.event;
+        const target = event.target ? event.target : event.srcElement;
+
+        if(matchSelector(target, selector)) {
+            if(callback) {
+                callback.call(target);
+            }
+        }
+    }
+
+    if(parentElement.addEventLisetner) {
+        parentElement.addEventLisetner(type, handler, false);
+    } else {
+        parentElement.attach('on' + type, handler);
+    }
+}
 
 /*
 var box = document.getElementById('box');
@@ -522,7 +690,20 @@ quickSort函数：快速排序实现
 /*
 AOP：面向切面编程，实现before和after函数
 */
-
+Function.prototype.before = function(fn) {
+    const self = this;
+    return function() {
+        fn.apply(this, arguments);
+        self.apply(this, arguments);
+    }
+}
+Function.prototype.after = function(fn) {  
+    const self = this;
+    return function() {
+        self.apply(this, arguments);
+        fn.apply(this, arguments);
+    }
+}
 /*
 var fn5 = function(string) {
     console.log(string);
@@ -543,6 +724,42 @@ CodingMan('Peter').eat('dinner') ==> 'Hi! This is Peter!' 'Eat dinner'
 CodingMan('Peter').sleep(3).eat('dinner') ==>'Hi! This is Peter!' 3秒... 'Eat dinner'
 CodingMan('Peter').sleepFirst(5).eat('supper') ==> 5秒后.. 'Hi! This is Peter!' 'Eat supper'
 */
+const CodingMan = function(name) {
+    const Man = function(name) {
+        this.name = name;
+        setTimeout(() => {
+            console.log('Hi! This is ' + name + '!');
+        });
+        return this;
+    }
+
+    Man.prototype.sleep = function(seconds) {
+        const now = new Date();
+        const delay = seconds * 1000;
+        setTimeout(() => {
+            while(new Date - now < delay) {};
+            console.log('Wake up!');
+        });
+        return this;
+    }
+
+    Man.prototype.eat = function(food) {
+        setTimeout(() => {
+            console.log('Eat ' + food);
+        });
+        return this;
+    }
+
+    Man.prototype.sleepFirst = function(seconds) {
+        const now = new Date();
+        const delay = seconds * 1000;
+        while(new Date() - now < delay) {};
+        console.log('Wake up!');
+        return this;
+    }
+    return new Man(name);
+}
+
 
 //CodingMan('Peter');
 //CodingMan('Peter').sleep(3).eat('dinner');
@@ -552,14 +769,19 @@ CodingMan('Peter').sleepFirst(5).eat('supper') ==> 5秒后.. 'Hi! This is Peter!
 /*
 compose函数：函数组合串联
 */
-
+const compose = function(array) {
+    return function(arg) {
+        return array.reduceRight(function(composed, fn){
+            return fn(composed);
+        },arg);
+    }
+}
 /*
 var fn1 = a => a + 1;
 var fn2 = b => b + 2;
 var fn3 = c => c + 3;
 console.log(compose([fn1, fn2, fn3])(100));
 */
-
 /*
 isFirst函数：该值是否第一次出现
 */

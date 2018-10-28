@@ -195,10 +195,10 @@ function promiseAJAX(param) {
         xhr.send(param.data || null);
 
         xhr.onreadystatechange = function() {
-            if(xhr.readyState === 4 && xhr.status === 200) {
-                resolve(JSON.parse(xhr.responseText));
+            if(this.readyState === 4 && this.status === 200) {
+                resolve(JSON.parse(this.responseText));
             } else {
-                reject(JSON.parse(xhr.responseText));
+                reject(JSON.parse(this.responseText));
             }  
         }
     });   
